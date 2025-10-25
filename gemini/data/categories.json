@@ -1,0 +1,16 @@
+{
+    "ingresos": [
+        {"id": "salario", "nombre": "Salario", "icono": "💰"},
+        {"id": "inversion", "nombre": "Inversión", "icono": "📈"},
+        {"id": "regalo", "nombre": "Regalo", "icono": "🎁"},
+        {"id": "extra", "nombre": "Ingreso Extra", "icono": "✨"}
+    ],
+    "egresos": [
+        {"id": "renta", "nombre": "Renta/Hipoteca", "icono": "🏠"},
+        {"id": "comida", "nombre": "Comida/Mercado", "icono": "🍕"},
+        {"id": "transporte", "nombre": "Transporte", "icono": "🚗"},
+        {"id": "entretenimiento", "nombre": "Entretenimiento", "icono": "🎉"},
+        {"id": "servicios", "nombre": "Servicios", "icono": "💡"},
+        {"id": "ropa", "nombre": "Ropa", "icono": "👕"}
+    ]
+}

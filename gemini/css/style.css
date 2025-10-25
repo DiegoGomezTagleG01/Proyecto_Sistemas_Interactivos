@@ -1,0 +1,319 @@
+/* ==========================================================================
+   VARIABLES CSS: Temas y Colores
+   ========================================================================== */
+
+:root {
+    /* Colores primarios y de estado */
+    --color-principal: #4CAF50; /* Verde para Ingreso/Éxito */
+    --color-secundario: #F44336; /* Rojo para Egreso/Riesgo */
+    --color-neutro: #607D8B; /* Gris para textos secundarios */
+    
+    /* Colores de texto y fondo (Tema Claro por defecto) */
+    --color-fondo: #f4f7f6;
+    --color-panel: #ffffff;
+    --color-texto: #333333;
+    --color-borde: #eeeeee;
+
+    /* Colores de Estado Financiero */
+    --estado-saludable: var(--color-principal); /* Verde */
+    --estado-precaucion: #FFC107; /* Amarillo */
+    --estado-riesgo: var(--color-secundario); /* Rojo */
+
+    /* Fuentes y espaciado */
+    --font-principal: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --padding-base: 20px;
+    --border-radius-base: 8px;
+}
+
+/* Modo Oscuro (se activa con la clase 'dark-mode' en el body) */
+.dark-mode {
+    --color-fondo: #2c3e50;
+    --color-panel: #34495e;
+    --color-texto: #ecf0f1;
+    --color-borde: #4a637d;
+}
+
+/* ==========================================================================
+   ESTILOS GENERALES Y ACCESIBILIDAD
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-principal);
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    transition: background-color 0.3s, color 0.3s; /* Transición suave para el modo oscuro */
+}
+
+/* Contenedor principal para centrar y aplicar Grid/Flex */
+#app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--padding-base);
+}
+
+/* ==========================================================================
+   LAYOUT (FLEXBOX / GRID)
+   ========================================================================== */
+
+/* Header con Flexbox */
+#main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--color-borde);
+}
+
+/* Dashboard con Grid para dos columnas */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr; /* Columna Izquierda (Registro) más angosta que la Derecha (Gráfico) */
+    gap: 30px;
+}
+
+/* Panels/Secciones */
+.panel {
+    background-color: var(--color-panel);
+    padding: var(--padding-base);
+    border-radius: var(--border-radius-base);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.panel-title {
+    color: var(--color-principal);
+    margin-bottom: 15px;
+}
+
+/* ==========================================================================
+   FORMULARIO Y CONTROLES
+   ========================================================================== */
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="number"], input[type="text"], select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--color-borde);
+    border-radius: 4px;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s, transform 0.1s;
+    background-color: var(--color-principal);
+    color: white;
+}
+
+button:hover {
+    background-color: color-mix(in srgb, var(--color-principal) 80%, black);
+    transform: translateY(-1px);
+}
+
+/* Estilo para el botón de registrar */
+#btn-registrar {
+    width: 100%;
+    margin-top: 10px;
+    background-color: var(--color-principal);
+}
+
+/* ==========================================================================
+   BALANCE Y TRANSACCIONES
+   ========================================================================== */
+
+.balance-amount {
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--color-neutro); /* Color base */
+    transition: color 0.3s, transform 0.15s;
+}
+
+/* Clases dinámicas para el balance */
+.balance-positivo { color: var(--estado-saludable); }
+.balance-negativo { color: var(--estado-riesgo); }
+.balance-cero { color: var(--color-neutro); }
+
+/* Lista de Transacciones */
+.transaction-list {
+    list-style: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto; /* Scroll si hay muchas transacciones */
+}
+
+.transaction-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--color-borde);
+    font-size: 0.95em;
+    align-items: center;
+}
+
+.transaction-list li:last-child {
+    border-bottom: none;
+}
+
+.trans-monto {
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 3px;
+    min-width: 80px; /* Para alinear montos */
+    text-align: right;
+}
+
+.trans-ingreso {
+    color: var(--estado-saludable);
+    /* Animación sutil al aparecer un ingreso */
+    animation: fadeInGreen 0.5s ease-out;
+}
+
+.trans-egreso {
+    color: var(--estado-riesgo);
+    /* Animación sutil al aparecer un egreso */
+    animation: fadeInRed 0.5s ease-out;
+}
+
+/* ==========================================================================
+   GAMIFICACIÓN Y PROGRESO
+   ========================================================================== */
+
+.gamification-box {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px dashed var(--color-principal);
+    border-radius: var(--border-radius-base);
+}
+
+.progress-bar-bg {
+    background-color: var(--color-borde);
+    border-radius: 50px;
+    height: 15px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--estado-saludable);
+    transition: width 0.8s ease-out; /* Animación de progreso */
+}
+
+/* ==========================================================================
+   TOASTS (ALERTAS MOTIVACIONALES)
+   ========================================================================== */
+
+.toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background-color: rgba(50, 50, 50, 0.9);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+    transform: translateY(20px);
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.ingreso { background-color: rgba(76, 175, 80, 0.9); }
+.toast.egreso { background-color: rgba(244, 67, 54, 0.9); }
+
+/* ==========================================================================
+   ANIMACIONES CSS
+   ========================================================================== */
+
+/* Keyframes para la animación de aparición */
+@keyframes fadeInGreen {
+    from { opacity: 0; background-color: rgba(76, 175, 80, 0.1); transform: translateX(-10px); }
+    to { opacity: 1; background-color: transparent; transform: translateX(0); }
+}
+@keyframes fadeInRed {
+    from { opacity: 0; background-color: rgba(244, 67, 54, 0.1); transform: translateX(10px); }
+    to { opacity: 1; background-color: transparent; transform: translateX(0); }
+}
+
+/* Animación de "rebote" para el balance al actualizarse */
+.balance-bounce {
+    animation: bounce 0.3s ease-in-out;
+}
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* ==========================================================================
+   PANEL DE CONFIGURACIÓN (ASIDE)
+   ========================================================================== */
+
+.config-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 350px;
+    background-color: var(--color-panel);
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    padding: var(--padding-base);
+    transform: translateX(100%); /* Oculto por defecto */
+    transition: transform 0.4s ease-out;
+    z-index: 2000;
+}
+
+.config-panel.visible {
+    transform: translateX(0);
+}
+
+.config-section {
+    padding: 15px 0;
+    border-bottom: 1px solid var(--color-borde);
+}
+
+.close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    color: var(--color-texto);
+    font-size: 1.5em;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (Media Queries)
+   ========================================================================== */
+
+@media (max-width: 900px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Una sola columna en dispositivos pequeños */
+    }
+}
