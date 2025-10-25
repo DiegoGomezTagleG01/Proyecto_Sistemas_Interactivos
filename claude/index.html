@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Simulador de Finanzas Personales</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        /* ========================================
+           VARIABLES CSS - CONFIGURACIÓN DE COLORES Y TEMAS
+        ======================================== */
+        :root {
+            /* Colores principales */
+            --color-fondo: #0f172a;
+            --color-fondo-secundario: #1e293b;
+            --color-fondo-terciario: #334155;
+            --color-texto: #f1f5f9;
+            --color-texto-secundario: #cbd5e1;
+            
+            /* Colores de transacciones */
+            --color-ingreso: #10b981;
+            --color-ingreso-claro: #34d399;
+            --color-egreso: #ef4444;
+            --color-egreso-claro: #f87171;
+            
+            /* Colores de estado */
+            --color-exito: #22c55e;
+            --color-advertencia: #fbbf24;
+            --color-peligro: #dc2626;
+            --color-info: #3b82f6;
+            
+            /* Efectos y sombras */
+            --sombra-suave: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --sombra-media: 0 10px 15px rgba(0, 0, 0, 0.4);
+            --sombra-fuerte: 0 20px 25px rgba(0, 0, 0, 0.5);
+            
+            /* Transiciones */
+            --transicion-rapida: 0.2s ease;
+            --transicion-media: 0.3s ease;
+            --transicion-lenta: 0.5s ease;
+        }
+
+        /* Tema claro */
+        .tema-claro {
+            --color-fondo: #f8fafc;
+            --color-fondo-secundario: #ffffff;
+            --color-fondo-terciario: #e2e8f0;
+            --color-texto: #1e293b;
+            --color-texto-secundario: #475569;
+            --sombra-suave: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --sombra-media: 0 10px 15px rgba(0, 0, 0, 0.15);
+            --sombra-fuerte: 0 20px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ========================================
+           ESTILOS GENERALES Y RESET
+        ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--color-fondo);
+            color: var(--color-texto);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: background var(--transicion-media);
+        }
+
+        /* ========================================
+           CONTENEDOR PRINCIPAL
+        ======================================== */
+        .contenedor-principal {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ========================================
+           HEADER - CABECERA DEL SISTEMA
+        ======================================== */
+        .header {
+            background: var(--color-fondo-secundario);
+            padding: 25px 30px;
+            border-radius: 15px;
+            box-shadow: var(--sombra-media);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--color-ingreso), var(--color-info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .controles-header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-icono {
+            background: var(--color-fondo-terciario);
+            border: none;
+            color: var(--color-texto);
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transicion-rapida);
+            box-shadow: var(--sombra-suave);
+        }
+
+        .btn-icono:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--sombra-media);
+            background: var(--color-info);
+        }
+
+        /* ========================================
+           LAYOUT PRINCIPAL - GRID RESPONSIVO
+        ======================================== */
+        .layout-principal {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 968px) {
+            .layout-principal {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ========================================
+           TARJETAS - COMPONENTES MODULARES
+        ======================================== */
+        .tarjeta {
+            background: var(--color-fondo-secundario);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--sombra-media);
+            transition: all var(--transicion-media);
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--sombra-fuerte);
+        }
+
+        .tarjeta-titulo {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: var(--color-texto);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ========================================
+           FORMULARIO DE TRANSACCIONES
+        ======================================== */
+        .formulario-transaccion {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .grupo-input {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .grupo-input label {
+            font-weight: 600;
+            color: var(--color-texto-secundario);
+            font-size: 0.9rem;
+        }
+
+        .input, .select {
+            padding: 12px 15px;
+            border: 2px solid var(--color-fondo-terciario);
+            border-radius: 10px;
+            background: var(--color-fondo);
+            color: var(--color-texto);
+            font-size: 1rem;
+            transition: all var(--transicion-rapida);
+        }
+
+        .input:focus, .select:focus {
+            outline: none;
+            border-color: var(--color-info);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Grupo de botones de tipo de transacción */
+        .grupo-tipo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-tipo {
+            padding: 15px;
+            border: 2px solid var(--color-fondo-terciario);
+            border-radius: 10px;
+            background: var(--color-fondo);
+            color: var(--color-texto);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all var(--transicion-rapida);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-tipo:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-tipo.activo-ingreso {
+            background: var(--color-ingreso);
+            border-color: var(--color-ingreso);
+            color: white;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-tipo.activo-egreso {
+            background: var(--color-egreso);
+            border-color: var(--color-egreso);
+            color: white;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-principal {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--color-info), #8b5cf6);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transicion-rapida);
+            box-shadow: var(--sombra-media);
+            margin-top: 10px;
+        }
+
+        .btn-principal:hover {
+            transform: scale(1.05);
+            box-shadow: var(--sombra-fuerte);
+        }
+
+        .btn-principal:active {
+            transform: scale(0.98);
+        }
+
+        /* ========================================
+           RESUMEN FINANCIERO
+        ======================================== */
+        .resumen-financiero {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .tarjeta-resumen {
+            background: var(--color-fondo);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: var(--sombra-suave);
+            transition: all var(--transicion-media);
+        }
+
+        .tarjeta-resumen:hover {
+            transform: scale(1.05);
+            box-shadow: var(--sombra-media);
+        }
+
+        .tarjeta-resumen-icono {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .tarjeta-resumen-titulo {
+            font-size: 0.85rem;
+            color: var(--color-texto-secundario);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tarjeta-resumen-valor {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .valor-ingreso { color: var(--color-ingreso); }
+        .valor-egreso { color: var(--color-egreso); }
+        .valor-balance { color: var(--color-info); }
+
+        /* ========================================
+           LISTA DE TRANSACCIONES
+        ======================================== */
+        .lista-transacciones {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        /* Estilos del scrollbar */
+        .lista-transacciones::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .lista-transacciones::-webkit-scrollbar-track {
+            background: var(--color-fondo);
+            border-radius: 10px;
+        }
+
+        .lista-transacciones::-webkit-scrollbar-thumb {
+            background: var(--color-fondo-terciario);
+            border-radius: 10px;
+        }
+
+        .lista-transacciones::-webkit-scrollbar-thumb:hover {
+            background: var(--color-info);
+        }
+
+        .transaccion-item {
+            background: var(--color-fondo);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all var(--transicion-rapida);
+            border-left: 4px solid transparent;
+        }
+
+        .transaccion-item:hover {
+            transform: translateX(5px);
+            box-shadow: var(--sombra-suave);
+        }
+
+        .transaccion-item.ingreso {
+            border-left-color: var(--color-ingreso);
+        }
+
+        .transaccion-item.egreso {
+            border-left-color: var(--color-egreso);
+        }
+
+        .transaccion-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .transaccion-icono {
+            font-size: 1.8rem;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: var(--color-fondo-terciario);
+        }
+
+        .transaccion-detalles {
+            flex: 1;
+        }
+
+        .transaccion-descripcion {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .transaccion-categoria {
+            font-size: 0.85rem;
+            color: var(--color-texto-secundario);
+        }
+
+        .transaccion-monto {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+
+        .transaccion-monto.ingreso { color: var(--color-ingreso); }
+        .transaccion-monto.egreso { color: var(--color-egreso); }
+
+        .btn-eliminar {
+            background: var(--color-peligro);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all var(--transicion-rapida);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-eliminar:hover {
+            background: #b91c1c;
+            transform: scale(1.1);
+        }
+
+        /* ========================================
+           GRÁFICAS
+        ======================================== */
+        .contenedor-grafica {
+            background: var(--color-fondo);
+            padding: 20px;
+            border-radius: 12px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ========================================
+           PANEL DE CONFIGURACIÓN (SIDEBAR)
+        ======================================== */
+        .panel-config {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: var(--color-fondo-secundario);
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+            transition: right var(--transicion-lenta);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 25px;
+        }
+
+        .panel-config.abierto {
+            right: 0;
+        }
+
+        .panel-config-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--color-fondo-terciario);
+        }
+
+        .panel-config-titulo {
+            font-size: 1.5rem;
+        }
+
+        .seccion-config {
+            margin-bottom: 25px;
+        }
+
+        .seccion-config-titulo {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--color-texto-secundario);
+        }
+
+        .opciones-tema {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .opcion-tema {
+            padding: 15px;
+            border: 2px solid var(--color-fondo-terciario);
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all var(--transicion-rapida);
+            background: var(--color-fondo);
+        }
+
+        .opcion-tema:hover {
+            transform: scale(1.05);
+            border-color: var(--color-info);
+        }
+
+        .opcion-tema.activa {
+            border-color: var(--color-info);
+            background: var(--color-info);
+            color: white;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        /* ========================================
+           MENSAJES TOAST
+        ======================================== */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--color-fondo-secundario);
+            color: var(--color-texto);
+            padding: 18px 24px;
+            border-radius: 12px;
+            box-shadow: var(--sombra-fuerte);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            animation: deslizarEntrada 0.4s ease;
+            max-width: 350px;
+        }
+
+        @keyframes deslizarEntrada {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.exito { border-left: 4px solid var(--color-exito); }
+        .toast.error { border-left: 4px solid var(--color-peligro); }
+        .toast.advertencia { border-left: 4px solid var(--color-advertencia); }
+
+        .toast-icono {
+            font-size: 1.5rem;
+        }
+
+        .toast-mensaje {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        /* ========================================
+           SISTEMA DE LOGROS
+        ======================================== */
+        .seccion-logros {
+            grid-column: 1 / -1;
+        }
+
+        .lista-logros {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .logro {
+            background: var(--color-fondo);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all var(--transicion-media);
+            opacity: 0.5;
+        }
+
+        .logro.desbloqueado {
+            opacity: 1;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .logro-icono {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            filter: grayscale(100%);
+        }
+
+        .logro.desbloqueado .logro-icono {
+            filter: grayscale(0%);
+            animation: rebote 0.6s ease;
+        }
+
+        @keyframes rebote {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .logro-nombre {
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logro-descripcion {
+            font-size: 0.85rem;
+            color: var(--color-texto-secundario);
+        }
+
+        /* ========================================
+           ANIMACIONES ADICIONALES
+        ======================================== */
+        @keyframes pulso {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .animacion-pulso {
+            animation: pulso 2s infinite;
+        }
+
+        /* ========================================
+           MENSAJE VACÍO
+        ======================================== */
+        .mensaje-vacio {
+            text-align: center;
+            padding: 40px;
+            color: var(--color-texto-secundario);
+        }
+
+        .mensaje-vacio-icono {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* ========================================
+           OVERLAY PARA PANEL
+        ======================================== */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .overlay.activo {
+            display: block;
+        }
+
+        /* ========================================
+           RESPONSIVIDAD
+        ======================================== */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .resumen-financiero {
+                grid-template-columns: 1fr;
+            }
+
+            .panel-config {
+                width: 100%;
+                right: -100%;
+            }
+
+            .grupo-tipo {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- OVERLAY PARA EL PANEL DE CONFIGURACIÓN -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="contenedor-principal">
+        <!-- HEADER -->
+        <header class="header">
+            <h1>💰 Simulador de Finanzas Personales</h1>
+            <div class="controles-header">
+                <button class="btn-icono" id="btnTema" title="Cambiar tema">🌙</button>
+                <button class="btn-icono" id="btnConfig" title="Configuración">⚙️</button>
+            </div>
+        </header>
+
+        <!-- LAYOUT PRINCIPAL -->
+        <div class="layout-principal">
+            <!-- FORMULARIO DE NUEVA TRANSACCIÓN -->
+            <div class="tarjeta">
+                <h2 class="tarjeta-titulo">➕ Nueva Transacción</h2>
+                <form class="formulario-transaccion" id="formTransaccion">
+                    <div class="grupo-input">
+                        <label>Tipo de Transacción</label>
+                        <div class="grupo-tipo">
+                            <button type="button" class="btn-tipo activo-ingreso" id="btnIngreso">
+                                📈 Ingreso
+                            </button>
+                            <button type="button" class="btn-tipo" id="btnEgreso">
+                                📉 Egreso
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="descripcion">Descripción</label>
+                        <input type="text" id="descripcion" class="input" placeholder="Ej: Salario, Comida..." required>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="monto">Monto ($)</label>
+                        <input type="number" id="monto" class="input" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label for="categoria">Categoría</label>
+                        <select id="categoria" class="select" required>
+                            <option value="">Selecciona una categoría</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-principal">✅ Agregar Transacción</button>
+                </form>
+            </div>
+
+            <!-- RESUMEN Y BALANCE -->
+            <div class="tarjeta">
+                <h2 class="tarjeta-titulo">📊 Resumen Financiero</h2>
+                <div class="resumen-financiero">
+                    <div class="tarjeta-resumen">
+                        <div class="tarjeta-resumen-icono">📈</div>
+                        <div class="tarjeta-resumen-titulo">Ingresos</div>
+                        <div class="tarjeta-resumen-valor valor-ingreso" id="totalIngresos">$0.00</div>
+                    </div>
+                    <div class="tarjeta-resumen">
+                        <div class="tarjeta-resumen-icono">📉</div>
+                        <div class="tarjeta-resumen-titulo">Egresos</div>
+                        <div class="tarjeta-resumen-valor valor-egreso" id="totalEgresos">$0.00</div>
+                    </div>
+                    <div class="tarjeta-resumen">
+                        <div class="tarjeta-resumen-icono">💰</div>
+                        <div class="tarjeta-resumen-titulo">Balance</div>
+                        <div class="tarjeta-resumen-valor valor-balance" id="balance">$0.00</div>
+                    </div>
+                </div>
+
+                <div class="contenedor-grafica">
+                    <canvas id="graficaBalance"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- HISTORIAL DE TRANSACCIONES -->
+        <div class="tarjeta">
+            <h2 class="tarjeta-titulo">📜 Historial de Transacciones</h2>
+            <div class="lista-transacciones" id="listaTransacciones">
+                <div class="mensaje-vacio">
+                    <div class="mensaje-vacio-icono">📭</div>
+                    <p>No hay transacciones registradas aún.<br>¡Comienza agregando tu primera transacción!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DE LOGROS -->
+        <div class="tarjeta seccion-logros">
+            <h2 class="tarjeta-titulo">🏆 Logros y Metas</h2>
+            <div class="lista-logros" id="listaLogros"></div>
+        </div>
+    </div>
+
+    <!-- PANEL DE CONFIGURACIÓN -->
+    <aside class="panel-config" id="panelConfig">
+        <div class="panel-config-header">
+            <h2 class="panel-config-titulo">⚙️ Configuración</h2>
+            <button class="btn-icono" id="btnCerrarPanel">✖️</button>
+        </div>
+
+        <div class="seccion-config">
+            <h3 class="seccion-config-titulo">🎨 Tema Visual</h3>
+            <div class="opciones-tema">
+                <div class="opcion-tema activa" data-tema="oscuro">🌙 Oscuro</div>
+                <div class="opcion-tema" data-tema="claro">☀️ Claro</div>
+            </div>
+        </div>
+
+        <div class="seccion-config">
+            <h3 class="seccion-config-titulo">🔔 Notificaciones</h3>
+            <div class="grupo-input">
+                <label>
+                    <input type="checkbox" id="notificacionesSonido" checked> 
+                    Sonidos de notificación
+                </label>
+            </div>
+        </div>
+
+        <div class="seccion-config">
+            <h3 class="seccion-config-titulo">🗑️ Datos</h3>
+            <button class="btn-principal" id="btnLimpiarDatos" style="background: var(--color-peligro)">
+                🗑️ Limpiar Todos los Datos
+            </button>
+        </div>
+    </aside>
+
+    <script>
+        /* ========================================
+           DATOS Y CONFIGURACIÓN INICIAL
+        ======================================== */
+        
+        // Categorías predefinidas con sus emojis
+        const CATEGORIAS = {
+            ingresos: [
+                { nombre: 'Salario', icono: '💼' },
+                { nombre: 'Freelance', icono: '💻' },
+                { nombre: 'Inversiones', icono: '📈' },
+                { nombre: 'Ventas', icono: '🛍️' },
+                { nombre: 'Regalos', icono: '🎁' },
+                { nombre: 'Otros Ingresos', icono: '💰' }
+            ],
+            egresos: [
+                { nombre: 'Alimentación', icono: '🍕' },
+                { nombre: 'Transporte', icono: '🚗' },
+                { nombre: 'Vivienda', icono: '🏠' },
+                { nombre: 'Servicios', icono: '💡' },
+                { nombre: 'Entretenimiento', icono: '🎉' },
+                { nombre: 'Salud', icono: '💊' },
+                { nombre: 'Educación', icono: '📚' },
+                { nombre: 'Ropa', icono: '👕' },
+                { nombre: 'Otros Gastos', icono
