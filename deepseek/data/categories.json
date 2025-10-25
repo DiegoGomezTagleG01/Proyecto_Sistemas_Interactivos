@@ -1,0 +1,100 @@
+{
+  "categorias": [
+    {
+      "id": 1,
+      "nombre": "Salario",
+      "tipo": "ingreso",
+      "icono": "💰",
+      "color": "#10b981",
+      "descripcion": "Ingresos por trabajo fijo"
+    },
+    {
+      "id": 2,
+      "nombre": "Freelance",
+      "tipo": "ingreso",
+      "icono": "💼",
+      "color": "#10b981",
+      "descripcion": "Ingresos por trabajos independientes"
+    },
+    {
+      "id": 3,
+      "nombre": "Inversiones",
+      "tipo": "ingreso",
+      "icono": "📈",
+      "color": "#10b981",
+      "descripcion": "Ganancias por inversiones"
+    },
+    {
+      "id": 4,
+      "nombre": "Regalos",
+      "tipo": "ingreso",
+      "icono": "🎁",
+      "color": "#10b981",
+      "descripcion": "Dinero recibido como regalo"
+    },
+    {
+      "id": 5,
+      "nombre": "Alimentación",
+      "tipo": "egreso",
+      "icono": "🍕",
+      "color": "#ef4444",
+      "descripcion": "Gastos en comida y bebida"
+    },
+    {
+      "id": 6,
+      "nombre": "Transporte",
+      "tipo": "egreso",
+      "icono": "🚗",
+      "color": "#ef4444",
+      "descripcion": "Gastos en transporte y movilidad"
+    },
+    {
+      "id": 7,
+      "nombre": "Vivienda",
+      "tipo": "egreso",
+      "icono": "🏠",
+      "color": "#ef4444",
+      "descripcion": "Gastos relacionados con la vivienda"
+    },
+    {
+      "id": 8,
+      "nombre": "Entretenimiento",
+      "tipo": "egreso",
+      "icono": "🎉",
+      "color": "#ef4444",
+      "descripcion": "Gastos en ocio y entretenimiento"
+    },
+    {
+      "id": 9,
+      "nombre": "Salud",
+      "tipo": "egreso",
+      "icono": "🏥",
+      "color": "#ef4444",
+      "descripcion": "Gastos médicos y de salud"
+    },
+    {
+      "id": 10,
+      "nombre": "Educación",
+      "tipo": "egreso",
+      "icono": "📚",
+      "color": "#ef4444",
+      "descripcion": "Gastos en educación y formación"
+    },
+    {
+      "id": 11,
+      "nombre": "Ropa",
+      "tipo": "egreso",
+      "icono": "👕",
+      "color": "#ef4444",
+      "descripcion": "Gastos en ropa y calzado"
+    },
+    {
+      "id": 12,
+      "nombre": "Tecnología",
+      "tipo": "egreso",
+      "icono": "💻",
+      "color": "#ef4444",
+      "descripcion": "Gastos en tecnología y electrónica"
+    }
+  ]
+}

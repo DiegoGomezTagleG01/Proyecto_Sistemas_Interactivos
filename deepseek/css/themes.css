@@ -1,0 +1,55 @@
+/* =============================================
+   TEMAS Y COLORES - themes.css
+   Contiene los diferentes temas de color del sistema
+============================================= */
+
+/* Modo Oscuro */
+.modo-oscuro {
+    --color-fondo: #0f172a;
+    --color-texto: #f1f5f9;
+    --color-tarjeta: #1e293b;
+    --color-borde: #334155;
+    --sombra: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+/* Tema Azul (Por defecto) */
+.tema-azul {
+    --color-primario: #3b82f6;
+    --color-secundario: #8b5cf6;
+    --color-acento: #f59e0b;
+}
+
+/* Tema Verde */
+.tema-verde {
+    --color-primario: #10b981;
+    --color-secundario: #059669;
+    --color-acento: #d97706;
+}
+
+/* Tema Púrpura */
+.tema-purpura {
+    --color-primario: #8b5cf6;
+    --color-secundario: #7c3aed;
+    --color-acento: #db2777;
+}
+
+/* Tema Ámbar */
+.tema-ambar {
+    --color-primario: #f59e0b;
+    --color-secundario: #d97706;
+    --color-acento: #dc2626;
+}
+
+/* Tema Rojo */
+.tema-rojo {
+    --color-primario: #ef4444;
+    --color-secundario: #dc2626;
+    --color-acento: #d97706;
+}
+
+/* Tema Rosa */
+.tema-rosa {
+    --color-primario: #ec4899;
+    --color-secundario: #db2777;
+    --color-acento: #7c3aed;
+}

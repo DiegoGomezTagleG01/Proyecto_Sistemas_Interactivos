@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Simulador de Finanzas Personales</title>
+    
+    <!-- Hojas de estilo -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Librerías externas -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+</head>
+<body>
+    <!-- Overlay para el panel de configuración -->
+    <div class="overlay" id="overlay"></div>
+
+    <div class="contenedor">
+        <!-- Encabezado -->
+        <header class="encabezado">
+            <div class="titulo">
+                <i class="fas fa-coins fa-2x" style="color: var(--color-acento);"></i>
+                <h1>Simulador de Finanzas Personales</h1>
+            </div>
+            <div class="botones-configuracion">
+                <button class="btn btn-acento" id="btnConfiguracion">
+                    <i class="fas fa-cog"></i> Configuración
+                </button>
+                <button class="btn btn-primario" id="btnNuevaTransaccion">
+                    <i class="fas fa-plus"></i> Nueva Transacción
+                </button>
+            </div>
+        </header>
+
+        <!-- Resumen Financiero -->
+        <section class="resumen-financiero">
+            <div class="tarjeta tarjeta-resumen ingreso">
+                <h3>Ingresos Totales</h3>
+                <div class="valor" id="ingresosTotales">$0.00</div>
+            </div>
+            <div class="tarjeta tarjeta-resumen egreso">
+                <h3>Egresos Totales</h3>
+                <div class="valor" id="egresosTotales">$0.00</div>
+            </div>
+            <div class="tarjeta tarjeta-resumen balance">
+                <h3>Balance Actual</h3>
+                <div class="valor" id="balanceActual">$0.00</div>
+            </div>
+        </section>
+
+        <!-- Contenido Principal -->
+        <div class="contenedor-principal">
+            <!-- Formulario de Transacciones -->
+            <section class="tarjeta">
+                <h2><i class="fas fa-edit"></i> Registrar Transacción</h2>
+                <form class="formulario" id="formTransaccion">
+                    <div class="grupo-formulario">
+                        <label for="tipoTransaccion">Tipo de Transacción</label>
+                        <select id="tipoTransaccion" required>
+                            <option value="">Selecciona un tipo</option>
+                            <option value="ingreso">Ingreso</option>
+                            <option value="egreso">Egreso</option>
+                        </select>
+                    </div>
+                    <div class="grupo-formulario">
+                        <label for="categoria">Categoría</label>
+                        <select id="categoria" required>
+                            <option value="">Selecciona una categoría</option>
+                        </select>
+                    </div>
+                    <div class="grupo-formulario">
+                        <label for="descripcion">Descripción</label>
+                        <input type="text" id="descripcion" placeholder="Ej: Pago de nómina" required>
+                    </div>
+                    <div class="grupo-formulario">
+                        <label for="monto">Monto ($)</label>
+                        <input type="number" id="monto" min="0" step="0.01" placeholder="0.00" required>
+                    </div>
+                    <div class="grupo-formulario">
+                        <label for="fecha">Fecha</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                    <button type="submit" class="btn btn-primario">
+                        <i class="fas fa-save"></i> Guardar Transacción
+                    </button>
+                </form>
+            </section>
+
+            <!-- Gráfico de Finanzas -->
+            <section class="tarjeta">
+                <h2><i class="fas fa-chart-pie"></i> Resumen Gráfico</h2>
+                <div class="grafico-container">
+                    <canvas id="graficoFinanzas"></canvas>
+                </div>
+            </section>
+
+            <!-- Lista de Transacciones -->
+            <section class="tarjeta">
+                <h2><i class="fas fa-list"></i> Últimas Transacciones</h2>
+                <div class="lista-transacciones" id="listaTransacciones">
+                    <!-- Las transacciones se cargarán aquí dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Logros y Gamificación -->
+            <section class="tarjeta">
+                <h2><i class="fas fa-trophy"></i> Logros y Progreso</h2>
+                <div id="logrosContainer">
+                    <!-- Los logros se cargarán aquí dinámicamente -->
+                </div>
+                <div class="progreso-ahorro">
+                    <h3>Meta de Ahorro Mensual</h3>
+                    <div class="barra-progreso">
+                        <div class="progreso" id="barraProgresoAhorro" style="width: 0%"></div>
+                    </div>
+                    <div class="meta-info">
+                        <span id="ahorroActual">$0</span>
+                        <span id="metaAhorro">Meta: $1,000</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Panel de Configuración -->
+    <div class="panel-configuracion" id="panelConfiguracion">
+        <div class="encabezado-panel">
+            <h2><i class="fas fa-cog"></i> Configuración</h2>
+            <button class="cerrar-panel" id="cerrarPanel">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="opciones-configuracion">
+            <div class="opcion-configuracion">
+                <h3>Tema de Interfaz</h3>
+                <div class="selector-tema">
+                    <div class="tema-opcion activo" data-tema="claro">
+                        <i class="fas fa-sun"></i>
+                        <p>Modo Claro</p>
+                    </div>
+                    <div class="tema-opcion" data-tema="oscuro">
+                        <i class="fas fa-moon"></i>
+                        <p>Modo Oscuro</p>
+                    </div>
+                </div>
+            </div>
+            <div class="opcion-configuracion">
+                <h3>Color Principal</h3>
+                <div class="selector-color">
+                    <div class="color-opcion activo" style="background-color: #3b82f6;" data-color="azul"></div>
+                    <div class="color-opcion" style="background-color: #10b981;" data-color="verde"></div>
+                    <div class="color-opcion" style="background-color: #8b5cf6;" data-color="purpura"></div>
+                    <div class="color-opcion" style="background-color: #f59e0b;" data-color="ambar"></div>
+                    <div class="color-opcion" style="background-color: #ef4444;" data-color="rojo"></div>
+                    <div class="color-opcion" style="background-color: #ec4899;" data-color="rosa"></div>
+                </div>
+            </div>
+            <div class="opcion-configuracion">
+                <h3>Sonidos</h3>
+                <div class="grupo-formulario">
+                    <label>
+                        <input type="checkbox" id="sonidosActivados" checked> 
+                        Activar efectos de sonido
+                    </label>
+                </div>
+            </div>
+            <div class="opcion-configuracion">
+                <h3>Gestión de Categorías</h3>
+                <div id="listaCategorias">
+                    <!-- Las categorías se cargarán aquí dinámicamente -->
+                </div>
+                <button class="btn btn-secundario" style="margin-top: 15px;">
+                    <i class="fas fa-plus"></i> Agregar Categoría
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para mensajes -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMensaje">Transacción guardada exitosamente</span>
+    </div>
+
+    <!-- Scripts de la aplicación -->
+    <script src="js/data.js"></script>
+    <script src="js/sound-manager.js"></script>
+    <script src="js/chart-manager.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
