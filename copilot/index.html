@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador de Finanzas 💰</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- 🧾 Encabezado principal -->
+  <header>
+    <h1>💸 Simulador Interactivo de Finanzas Personales</h1>
+    <button id="btn-config">⚙️ Configuración</button>
+  </header>
+
+  <!-- 📥 Formulario de transacciones -->
+  <section id="formulario">
+    <h2>Registrar Transacción</h2>
+    <form id="transaccion-form">
+      <input type="number" id="monto" placeholder="Monto" required />
+      <select id="categoria"></select>
+      <select id="tipo">
+        <option value="ingreso">🟢 Ingreso</option>
+        <option value="egreso">🔴 Egreso</option>
+      </select>
+      <input type="date" id="fecha" required />
+      <button type="submit">Agregar</button>
+    </form>
+  </section>
+
+  <!-- 📊 Resumen y gráfica -->
+  <section id="resumen">
+    <h2>Resumen Financiero</h2>
+    <div id="balance">Balance: $0</div>
+    <canvas id="grafica"></canvas>
+  </section>
+
+  <!-- ⚙️ Panel de configuración oculto -->
+  <aside id="config-panel" class="oculto">
+    <h2>Configuración</h2>
+    <label><input type="checkbox" id="modo-oscuro" /> Modo Oscuro</label>
+    <!-- Más opciones aquí -->
+  </aside>
+
+  <script src="js/app.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/data.js"></script>
+</body>
+</html>

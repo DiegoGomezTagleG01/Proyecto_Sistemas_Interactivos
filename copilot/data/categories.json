@@ -1,0 +1,7 @@
+[
+  { "nombre": "Sueldo", "emoji": "💰" },
+  { "nombre": "Comida", "emoji": "🍕" },
+  { "nombre": "Hogar", "emoji": "🏠" },
+  { "nombre": "Transporte", "emoji": "🚗" },
+  { "nombre": "Ocio", "emoji": "🎉" }
+]

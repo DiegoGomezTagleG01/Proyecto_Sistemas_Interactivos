@@ -1,0 +1,38 @@
+:root {
+  --color-ingreso: #4CAF50;
+  --color-egreso: #F44336;
+  --fondo-claro: #f9f9f9;
+  --fondo-oscuro: #1e1e1e;
+  --texto-claro: #333;
+  --texto-oscuro: #eee;
+}
+
+/* 🌗 Modo oscuro */
+body.modo-oscuro {
+  background-color: var(--fondo-oscuro);
+  color: var(--texto-oscuro);
+}
+
+/* 🧾 Layout principal */
+header, section, aside {
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 8px;
+}
+
+/* 📊 Balance */
+#balance {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-ingreso);
+}
+
+/* 🔴 Egreso */
+.egreso {
+  color: var(--color-egreso);
+}
+
+/* 🟢 Ingreso */
+.ingreso {
+  color: var(--color-ingreso);
+}
