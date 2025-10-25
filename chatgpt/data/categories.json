@@ -1,0 +1,8 @@
+[
+  {"id":"sueldo","emoji":"💰","nombre":"Sueldo","tipo":"ingreso"},
+  {"id":"venta","emoji":"🪙","nombre":"Venta","tipo":"ingreso"},
+  {"id":"comida","emoji":"🍕","nombre":"Comida","tipo":"egreso"},
+  {"id":"hogar","emoji":"🏠","nombre":"Hogar","tipo":"egreso"},
+  {"id":"transporte","emoji":"🚗","nombre":"Transporte","tipo":"egreso"},
+  {"id":"ocio","emoji":"🎉","nombre":"Ocio","tipo":"egreso"}
+]

@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simulador Interactivo de Finanzas Personales</title>
+
+  <!-- Fonts (sistema) y meta -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="description" content="Simulador interactivo para gestionar ingresos y gastos.">
+
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Howler.js (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+</head>
+<body>
+  <!--
+    Página principal: una sola ventana con paneles
+    Comentarios en español describen cada bloque
+  -->
+  <div id="app" class="app">
+    <!-- Header / Resumen -->
+    <header class="topbar" role="banner">
+      <div class="brand" aria-hidden="true">💼 <strong>Simulador Financier@</strong></div>
+      <div class="balance-panel" aria-live="polite">
+        <div class="balance-label">Balance</div>
+        <div id="balance" class="balance-amount" aria-atomic="true">MXN $0.00</div>
+        <div id="statusMessage" class="status-message">Bienvenido — registra tu primer movimiento ✨</div>
+      </div>
+
+      <div class="controls">
+        <button id="btnSettings" class="btn icon" title="Configuración" aria-label="Abrir configuración">⚙️</button>
+        <button id="btnToggleTheme" class="btn" title="Modo oscuro/claro">🌗</button>
+      </div>
+    </header>
+
+    <main class="main-grid" role="main">
+      <!-- Formulario rápido: ingreso / egreso -->
+      <section class="card form-card" aria-labelledby="formTitle">
+        <h2 id="formTitle">Registrar transacción</h2>
+        <form id="formTrans" class="trans-form" autocomplete="off" novalidate>
+          <div class="row">
+            <label>
+              Tipo
+              <select id="tipo" required>
+                <option value="ingreso">🟢 Ingreso</option>
+                <option value="egreso">🔴 Egreso</option>
+              </select>
+            </label>
+            <label>
+              Monto
+              <input id="monto" type="number" step="0.01" min="0.01" required aria-required="true" placeholder="0.00">
+            </label>
+          </div>
+
+          <div class="row">
+            <label>
+              Categoría
+              <select id="categoria" required aria-required="true"></select>
+            </label>
+
+            <label>
+              Fecha
+              <input id="fecha" type="date" value="">
+            </label>
+          </div>
+
+          <label>
+            Nota (opcional)
+            <input id="nota" type="text" maxlength="120" placeholder="Ej. Venta, sueldo, comida">
+          </label>
+
+          <div class="actions">
+            <button type="submit" class="btn primary">Guardar ✨</button>
+            <button type="button" id="btnResetForm" class="btn ghost">Limpiar</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Panel gráfico -->
+      <section class="card chart-card" aria-labelledby="chartTitle">
+        <h2 id="chartTitle">Evolución del balance</h2>
+        <canvas id="chartBalance" width="400" height="200" aria-label="Gráfica de evolución del balance"></canvas>
+        <div class="chart-controls">
+          <label>Periodo:
+            <select id="periodo">
+              <option value="30">30 días</option>
+              <option value="90">90 días</option>
+              <option value="365" selected>1 año</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <!-- Lista de transacciones -->
+      <section class="card list-card" aria-labelledby="listTitle">
+        <h2 id="listTitle">Transacciones recientes</h2>
+        <ul id="listaTrans" class="trans-list" role="list"></ul>
+      </section>
+
+      <!-- Barra lateral / gamificación -->
+      <aside class="card gamify-card" aria-labelledby="gamTitle">
+        <h2 id="gamTitle">Progreso y logros</h2>
+        <div id="progressGoal" class="goal">
+          <div class="goal-info">
+            <div class="goal-title">Meta: Ahorro mensual</div>
+            <div id="goalAmount" class="goal-amount">MXN $1,000.00</div>
+          </div>
+          <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+            <div id="progressFill" class="progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="achievements">
+          <h3>Logros</h3>
+          <ul id="achList">
+            <li>💎 Ahorrista Nivel 1</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Panel configuración oculto -->
+    <div id="panelSettings" class="panel settings-panel" aria-hidden="true">
+      <header>
+        <h2>Configuración</h2>
+        <button id="closeSettings" class="btn icon" aria-label="Cerrar">✖</button>
+      </header>
+
+      <section>
+        <h3>Apariencia</h3>
+        <label>Tema
+          <select id="themeSelect">
+            <option value="auto">Automático</option>
+            <option value="light">Claro</option>
+            <option value="dark">Oscuro</option>
+          </select>
+        </label>
+        <label>Color de acento
+          <input id="accentColor" type="color" value="#3b82f6">
+        </label>
+        <label>
+          <input id="toggleSounds" type="checkbox" checked> Efectos de sonido
+        </label>
+      </section>
+
+      <section>
+        <h3>Categorías</h3>
+        <div id="categoryManager">
+          <p class="muted">Añade o edita categorías (emoji + nombre).</p>
+          <div class="row">
+            <input id="newCatEmoji" placeholder="Emoji (ej. 🍕)" maxlength="2">
+            <input id="newCatName" placeholder="Nombre categoría (ej. Comida)">
+            <button id="addCategoryBtn" class="btn">Añadir</button>
+          </div>
+          <ul id="catsList" class="cats-list"></ul>
+        </div>
+      </section>
+
+      <footer class="settings-footer">
+        <small>Datos guardados en tu navegador (LocalStorage).</small>
+      </footer>
+    </div>
+
+    <!-- Toaster -->
+    <div id="toaster" class="toaster" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <!-- JS: carga modular (data, ui, app) -->
+  <script src="js/data.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
