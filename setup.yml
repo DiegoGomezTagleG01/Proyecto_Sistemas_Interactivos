@@ -1,0 +1,60 @@
+project:
+  name: "Aprende-Ortografía-Caligrafía"
+  version: "1.0.0"
+  description: "Aplicación web interactiva para mejorar ortografía y caligrafía"
+  author: "Tu Nombre"
+  license: "MIT"
+
+environment:
+  dev_server: "http://localhost:5500"
+  build_tool: "none" # Usando servidor estático
+  auto_reload: true
+  port: 5500
+
+settings:
+  language: "es"
+  default_theme: "light"
+  available_themes: ["light", "dark"]
+  primary_color: "#4B8FE2"
+  secondary_color: "#F5F5F5"
+  accent_color: "#FF6B6B"
+  font_family: "Poppins, sans-serif"
+  fallback_font: "Arial, sans-serif"
+
+features:
+  spelling:
+    enabled: true
+    exercise_types: ["complete", "correct", "dictation"]
+    difficulty_levels: ["easy", "medium", "hard"]
+    max_level: 10
+  handwriting:
+    enabled: true
+    supported_letters: "abcdefghijklmnopqrstuvwxyz"
+    canvas_width: 600
+    canvas_height: 400
+  user_management:
+    enabled: true
+    require_email: false
+    min_password_length: 6
+  progress_tracking:
+    enabled: true
+    storage_type: "localStorage" # o "indexedDB" para datos más complejos
+
+dependencies:
+  frontend:
+    - "FontAwesome 6.0.0 (CDN)"
+    - "Google Fonts (Poppins, Open Sans)"
+  optional:
+    - "Web Speech API (para dictados)"
+    - "Canvas API (para caligrafía)"
+
+browser_support:
+  chrome: ">= 60"
+  firefox: ">= 55"
+  safari: ">= 11"
+  edge: ">= 79"
+
+development:
+  live_reload: true
+  debug_mode: true
+  console_logs: true

@@ -1,0 +1,72 @@
+/* Tablet */
+@media (max-width: 768px) {
+    .header .container {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .nav ul {
+        gap: var(--spacing-md);
+    }
+    
+    .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    
+    .hero-buttons {
+        justify-content: center;
+    }
+    
+    .floating-cards {
+        display: none;
+    }
+    
+    .module-controls {
+        flex-direction: column;
+    }
+    
+    #handwritingCanvas {
+        width: 100%;
+        height: 300px;
+    }
+    
+    .letter-guide {
+        font-size: 120px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+    
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn-large {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .difficulty-selector {
+        flex-direction: column;
+    }
+    
+    .progress-stats {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    
+    .modal-content {
+        margin: 20% auto;
+        padding: var(--spacing-lg);
+    }
+}
