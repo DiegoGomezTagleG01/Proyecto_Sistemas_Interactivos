@@ -1,0 +1,153 @@
+/* Mejoras para el módulo de ortografía */
+.exercise {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 1rem 0;
+}
+
+.word-display {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 1rem 0;
+    letter-spacing: 0.2em;
+    color: #2c3e50;
+}
+
+.incorrect-word {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 1rem 0;
+    color: #e74c3c;
+    text-decoration: line-through;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin: 1.5rem 0;
+    align-items: center;
+}
+
+.input-group input,
+.input-group textarea {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+    outline: none;
+    border-color: #4B8FE2;
+}
+
+.enter-hint {
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+.audio-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+/* Opciones de selección múltiple */
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 1.5rem 0;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option:hover {
+    border-color: #4B8FE2;
+    background-color: #f8f9fa;
+}
+
+.option.selected {
+    border-color: #4B8FE2;
+    background-color: #e3f2fd;
+}
+
+.option input {
+    margin-right: 12px;
+}
+
+.option-text {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Efectos de éxito */
+.success-flash {
+    animation: successFlash 0.5s ease;
+}
+
+@keyframes successFlash {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(46, 204, 113, 0.1); }
+    100% { background-color: transparent; }
+}
+
+/* Estadísticas de progreso mejoradas */
+.progress-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.progress-stats span {
+    background: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #e9ecef;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .input-group input,
+    .input-group textarea {
+        width: 100%;
+    }
+    
+    .word-display {
+        font-size: 2rem;
+        letter-spacing: 0.1em;
+    }
+    
+    .options-container {
+        gap: 8px;
+    }
+    
+    .option {
+        padding: 10px 12px;
+    }
+}
