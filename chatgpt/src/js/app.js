@@ -10,6 +10,7 @@ class LearningApp {
         this.setupEventListeners();
         this.loadUserProgress();
         this.showSection('home');
+        this.setupScoreModal();
     }
 
     checkAuthStatus() {
@@ -20,7 +21,7 @@ class LearningApp {
         }
     }
 
-    setupEventListeners() {
+     setupEventListeners() {
         // Navegación
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', (e) => {
@@ -63,18 +64,8 @@ class LearningApp {
             Auth.showLoginForm();
         });
 
-        // Cerrar modal
-        document.querySelector('.close-modal').addEventListener('click', () => {
-            UI.hideModal('authModal');
-        });
-
-        // Cerrar modal al hacer click fuera
-        window.addEventListener('click', (e) => {
-            const modal = document.getElementById('authModal');
-            if (e.target === modal) {
-                UI.hideModal('authModal');
-            }
-        });
+        // Cerrar modales
+        this.setupModalCloseEvents();
 
         // Forms de autenticación
         document.querySelector('#loginForm form').addEventListener('submit', (e) => {
@@ -87,6 +78,57 @@ class LearningApp {
             Auth.handleRegister();
         });
     }
+
+    setupModalCloseEvents() {
+        // Cerrar modal de autenticación
+        document.querySelector('#authModal .close-modal').addEventListener('click', () => {
+            UI.hideModal('authModal');
+        });
+
+        // Cerrar modal de puntuación
+        document.querySelector('#scoreModal .close-modal').addEventListener('click', () => {
+            UI.hideModal('scoreModal');
+        });
+
+        // Cerrar modales al hacer click fuera
+        window.addEventListener('click', (e) => {
+            const authModal = document.getElementById('authModal');
+            const scoreModal = document.getElementById('scoreModal');
+            
+            if (e.target === authModal) {
+                UI.hideModal('authModal');
+            }
+            if (e.target === scoreModal) {
+                UI.hideModal('scoreModal');
+            }
+        });
+    }
+
+    setupScoreModal() {
+    const practiceAgainBtn = document.getElementById('practiceAgain');
+    const nextLetterBtn = document.getElementById('nextLetterBtn');
+
+    if (practiceAgainBtn) {
+        practiceAgainBtn.addEventListener('click', () => {
+            UI.hideModal('scoreModal');
+            if (typeof HandwritingModule !== 'undefined') {
+                HandwritingModule.clearCanvas();
+                HandwritingModule.startPracticeTimer();
+            }
+        });
+    }
+
+    if (nextLetterBtn) {
+        nextLetterBtn.addEventListener('click', () => {
+            UI.hideModal('scoreModal');
+            if (typeof HandwritingModule !== 'undefined') {
+                HandwritingModule.nextRandomLetter();
+                HandwritingModule.clearCanvas();
+                HandwritingModule.startPracticeTimer();
+            }
+        });
+    }
+}
 
     showSection(sectionName) {
         // Ocultar todas las secciones
@@ -103,7 +145,10 @@ class LearningApp {
         document.getElementById(sectionName).classList.add('active');
         
         // Activar link de navegación correspondiente
-        document.querySelector(`.nav-link[href="#${sectionName}"]`).classList.add('active');
+        const correspondingLink = document.querySelector(`.nav-link[href="#${sectionName}"]`);
+        if (correspondingLink) {
+            correspondingLink.classList.add('active');
+        }
 
         this.currentSection = sectionName;
 
@@ -114,10 +159,15 @@ class LearningApp {
     initializeSectionModules(sectionName) {
         switch(sectionName) {
             case 'spelling':
-                SpellingModule.init();
+                if (typeof SpellingModule !== 'undefined') {
+                    SpellingModule.init();
+                }
                 break;
             case 'handwriting':
-                HandwritingModule.init();
+                if (typeof HandwritingModule !== 'undefined') {
+                    HandwritingModule.init();
+                    HandwritingModule.startPracticeTimer();
+                }
                 break;
             case 'progress':
                 this.loadProgressData();
@@ -211,6 +261,10 @@ class LearningApp {
 
         Storage.saveUserProgress(this.currentUser.id, progress);
         this.updateProgressUI(progress);
+        
+    }
+    static showScore(score, details = {}) {
+        UI.showScoreModal(score, details);
     }
 }
 
@@ -218,3 +272,4 @@ class LearningApp {
 document.addEventListener('DOMContentLoaded', () => {
     window.app = new LearningApp();
 });
+

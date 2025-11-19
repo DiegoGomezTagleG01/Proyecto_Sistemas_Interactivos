@@ -13,6 +13,8 @@ class HandwritingModule {
     static currentStroke = [];
     static inappropriateContentDetected = false;
     static inappropriateContentCount = 0;
+    static practiceStartTime = 0;
+    static currentScore = 0;
 
     // Definición completa de letras disponibles
     static availableLetters = {
@@ -51,6 +53,248 @@ class HandwritingModule {
         this.setupColorSelector();
         this.updateLetterGuide();
         this.loadUserProgress();
+        
+        // Iniciar timer de práctica
+        this.startPracticeTimer();
+        
+        // Manejar redimensionamiento
+        window.addEventListener('resize', () => {
+            this.handleResize();
+        });
+    }
+
+     static handleResize() {
+        const container = this.canvas.parentElement;
+        if (!container) return;
+        
+        const rect = container.getBoundingClientRect();
+        
+        // Establecer el tamaño del canvas según el contenedor
+        this.canvas.width = rect.width;
+        this.canvas.height = rect.height;
+        
+        // Redibujar si hay trazos guardados
+        if (this.strokes.length > 0) {
+            this.redrawCanvas();
+        } else {
+            this.clearCanvas();
+        }
+        
+        // Actualizar configuración
+        this.ctx.lineWidth = this.currentLineWidth;
+        this.ctx.lineCap = 'round';
+        this.ctx.lineJoin = 'round';
+        this.ctx.strokeStyle = this.currentColor;
+    }
+
+    static getMousePos(e) {
+        const rect = this.canvas.getBoundingClientRect();
+        let clientX, clientY;
+        
+        if (e.type.includes('touch')) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        // Escalar coordenadas según el tamaño real del canvas
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+
+     static setupScoreModal() {
+        const modal = document.getElementById('scoreModal');
+        const closeBtn = modal.querySelector('.close-modal');
+        const practiceAgainBtn = document.getElementById('practiceAgain');
+        const nextLetterBtn = document.getElementById('nextLetterBtn');
+
+        closeBtn.addEventListener('click', () => {
+            this.hideScoreModal();
+        });
+
+        practiceAgainBtn.addEventListener('click', () => {
+            this.hideScoreModal();
+            this.clearCanvas();
+            this.startPracticeTimer();
+        });
+
+        nextLetterBtn.addEventListener('click', () => {
+            this.hideScoreModal();
+            this.nextRandomLetter();
+            this.clearCanvas();
+            this.startPracticeTimer();
+        });
+
+        // Cerrar modal al hacer click fuera
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.hideScoreModal();
+            }
+        });
+    }
+
+    static showScoreModal(score, letter) {
+        const modal = document.getElementById('scoreModal');
+        const scoreValue = document.getElementById('scoreValue');
+        const scoreLetter = document.getElementById('scoreLetter');
+        const scoreLevel = document.getElementById('scoreLevel');
+        const scoreTime = document.getElementById('scoreTime');
+        const scoreTitle = document.getElementById('scoreTitle');
+        const scoreIcon = document.getElementById('scoreIcon');
+        
+        // Calcular tiempo de práctica
+        const practiceTime = Math.floor((Date.now() - this.practiceStartTime) / 1000);
+        
+        // Determinar nivel basado en la puntuación
+        const level = this.calculateLevel(score);
+        
+        // Actualizar contenido del modal
+        scoreValue.textContent = score + '%';
+        scoreLetter.textContent = letter;
+        scoreLevel.textContent = level;
+        scoreTime.textContent = practiceTime + 's';
+        
+        // Configurar estilo según la puntuación
+        this.configureScoreStyle(score, modal, scoreTitle, scoreIcon);
+        
+        // Animar círculo de puntuación
+        this.animateScoreCircle(score);
+        
+        // Mostrar confeti si la puntuación es alta
+        if (score >= 80) {
+            this.createConfetti();
+        }
+        
+        // Mostrar modal
+        modal.style.display = 'block';
+        
+        // Actualizar progreso del usuario
+        if (score >= 70) {
+            this.updateUserProgress(score);
+        }
+    }
+
+    static hideScoreModal() {
+        const modal = document.getElementById('scoreModal');
+        modal.style.display = 'none';
+        
+        // Remover clases de estilo
+        modal.classList.remove('score-excellent', 'score-good', 'score-poor');
+    }
+
+    static configureScoreStyle(score, modal, title, icon) {
+        // Limpiar clases anteriores
+        modal.classList.remove('score-excellent', 'score-good', 'score-poor');
+        
+        if (score >= 85) {
+            modal.classList.add('score-excellent');
+            title.textContent = '¡Excelente!';
+            icon.className = 'fas fa-trophy';
+        } else if (score >= 70) {
+            modal.classList.add('score-good');
+            title.textContent = '¡Buen Trabajo!';
+            icon.className = 'fas fa-star';
+        } else {
+            modal.classList.add('score-poor');
+            title.textContent = 'Sigue Practicando';
+            icon.className = 'fas fa-redo';
+        }
+    }
+
+    static animateScoreCircle(score) {
+        const scoreCircle = document.querySelector('.score-circle');
+        const percent = (score / 100) * 360;
+        
+        // Establecer variable CSS para la animación
+        document.documentElement.style.setProperty('--score-percent', percent + 'deg');
+        
+        // Reiniciar animación
+        scoreCircle.style.animation = 'none';
+        setTimeout(() => {
+            scoreCircle.style.animation = 'scoreFill 1.5s ease-out forwards';
+        }, 10);
+    }
+
+    static calculateLevel(score) {
+        if (score >= 90) return 5;
+        if (score >= 80) return 4;
+        if (score >= 70) return 3;
+        if (score >= 60) return 2;
+        return 1;
+    }
+
+    static createConfetti() {
+        const colors = ['#4B8FE2', '#FF6B6B', '#4CAF50', '#FFC107', '#9C27B0'];
+        const confettiCount = 50;
+        
+        for (let i = 0; i < confettiCount; i++) {
+            setTimeout(() => {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.setProperty('--confetti-color', colors[Math.floor(Math.random() * colors.length)]);
+                confetti.style.animationDelay = (Math.random() * 2) + 's';
+                
+                document.body.appendChild(confetti);
+                
+                // Remover después de la animación
+                setTimeout(() => {
+                    if (confetti.parentNode) {
+                        confetti.parentNode.removeChild(confetti);
+                    }
+                }, 3000);
+            }, i * 100);
+        }
+    }
+
+    static startPracticeTimer() {
+        this.practiceStartTime = Date.now();
+    }
+
+    static checkLetter() {
+        if (this.inappropriateContentDetected) {
+            if (typeof UI !== 'undefined' && UI.showNotification) {
+                UI.showNotification('Por favor, dibuja contenido apropiado antes de verificar.', 'warning');
+            }
+            return;
+        }
+        
+        const canvasData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        const drawnPixels = this.countDrawnPixels(canvasData);
+        
+        if (drawnPixels < 50) {
+            if (typeof UI !== 'undefined' && UI.showNotification) {
+                UI.showNotification('Dibuja más claramente para poder evaluar', 'warning');
+            }
+            return;
+        }
+
+        const score = this.enhancedLetterEvaluation();
+        this.currentScore = score;
+        
+        // Mostrar resultado en modal
+        this.showScoreModal(score, this.currentLetter);
+        
+        // Manejar lógica de evaluación
+        this.handleEvaluationResult(score);
+    }
+
+    // Modificar handleEvaluationResult para que no muestre en HTML
+    static handleEvaluationResult(score) {
+        // Esta función ahora solo maneja la lógica interna
+        if (score >= 85) {
+            this.handleSuccessfulPractice(score);
+        }
+        
+        // El progreso se actualiza en showScoreModal cuando score >= 70
     }
 
     static setupCanvas() {
@@ -60,9 +304,10 @@ class HandwritingModule {
         this.ctx.lineJoin = 'round';
         this.ctx.strokeStyle = this.currentColor;
         
-        // Fondo blanco
-        this.clearCanvas();
+        // Establecer tamaño inicial
+        this.handleResize();
     }
+    
 
     static setupEventListeners() {
         // Eventos del canvas
@@ -82,7 +327,6 @@ class HandwritingModule {
         const undoBtn = document.getElementById('undoDrawing');
         const nextBtn = document.getElementById('nextLetter');
         const lineWidth = document.getElementById('lineWidth');
-        const practiceMode = document.getElementById('practiceMode');
 
         if (clearBtn) {
             clearBtn.addEventListener('click', () => {
@@ -116,13 +360,6 @@ class HandwritingModule {
                 if (lineWidthValue) {
                     lineWidthValue.textContent = this.currentLineWidth;
                 }
-            });
-        }
-
-        if (practiceMode) {
-            practiceMode.addEventListener('change', (e) => {
-                this.currentMode = e.target.value;
-                this.changePracticeMode(this.currentMode);
             });
         }
     }
@@ -242,13 +479,6 @@ class HandwritingModule {
         e.preventDefault();
         const pos = this.getMousePos(e);
         
-        // Análisis en tiempo real para contenido inapropiado
-        if (this.analyzeStrokeForInappropriateContent(pos.x, pos.y)) {
-            this.stopDrawing();
-            this.handleInappropriateContent();
-            return;
-        }
-        
         // Dibujar línea
         this.ctx.beginPath();
         this.ctx.moveTo(this.lastX, this.lastY);
@@ -277,11 +507,6 @@ class HandwritingModule {
             this.strokes.push([...this.currentStroke]);
             this.currentStroke = [];
         }
-        
-        // Análisis post-dibujo
-        setTimeout(() => {
-            this.analyzeCompleteDrawing();
-        }, 200);
     }
 
     static analyzeStrokeForInappropriateContent(x, y) {
@@ -605,13 +830,7 @@ class HandwritingModule {
     }
 
     static checkLetter() {
-        if (this.inappropriateContentDetected) {
-            if (typeof UI !== 'undefined' && UI.showNotification) {
-                UI.showNotification('Por favor, dibuja contenido apropiado antes de verificar.', 'warning');
-            }
-            return;
-        }
-        
+        // Verificar si hay contenido dibujado
         const canvasData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
         const drawnPixels = this.countDrawnPixels(canvasData);
         
@@ -623,6 +842,21 @@ class HandwritingModule {
         }
 
         const score = this.enhancedLetterEvaluation();
+        this.currentScore = score;
+        
+        // Mostrar resultado usando el sistema de UI
+        const practiceTime = Math.floor((Date.now() - this.practiceStartTime) / 1000);
+        const level = this.calculateLevel(score);
+        
+        if (typeof UI !== 'undefined' && UI.showScoreModal) {
+            UI.showScoreModal(score, {
+                letter: this.currentLetter,
+                level: level,
+                practiceTime: practiceTime
+            });
+        }
+        
+        // Manejar lógica de evaluación
         this.handleEvaluationResult(score);
     }
 
@@ -642,16 +876,10 @@ class HandwritingModule {
         // Evaluación mejorada que considera múltiples factores
         let baseScore = Math.random() * 30 + 65; // 65-95 base
         
-        // Bonus por modo guiado
-        if (this.currentMode === 'guided') {
-            baseScore += 5;
-        }
-        
         // Bonus por práctica consistente (solo si el usuario está logueado)
         if (window.app && window.app.currentUser && typeof Storage !== 'undefined') {
             try {
                 const progress = Storage.getUserProgress(window.app.currentUser.id);
-                // Verificar que progress y handwriting existan
                 if (progress && progress.handwriting) {
                     const practiceCount = progress.handwriting.practiceCount || 0;
                     baseScore += Math.min(10, practiceCount * 0.2);
@@ -664,43 +892,16 @@ class HandwritingModule {
         return Math.min(100, Math.round(baseScore));
     }
 
-    static handleEvaluationResult(score) {
-        const scoreElement = document.getElementById('handwritingScore');
-        if (!scoreElement) return;
-        
-        if (score >= 85) {
-            scoreElement.innerHTML = `
-                <div class="feedback-message correct">
-                    <i class="fas fa-check-circle"></i>
-                    <div>
-                        <strong>¡Excelente!</strong>
-                        <div>Puntuación: ${score}%</div>
-                    </div>
-                </div>
-            `;
-            this.handleSuccessfulPractice(score);
-        } else if (score >= 70) {
-            scoreElement.innerHTML = `
-                <div class="feedback-message warning">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <div>
-                        <strong>Buen trabajo</strong>
-                        <div>Puntuación: ${score}% - Sigue practicando</div>
-                    </div>
-                </div>
-            `;
-        } else {
-            scoreElement.innerHTML = `
-                <div class="feedback-message incorrect">
-                    <i class="fas fa-times-circle"></i>
-                    <div>
-                        <strong>Necesitas práctica</strong>
-                        <div>Puntuación: ${score}%</div>
-                    </div>
-                </div>
-            `;
-        }
+    static calculateLevel(score) {
+        if (score >= 90) return 5;
+        if (score >= 80) return 4;
+        if (score >= 70) return 3;
+        if (score >= 60) return 2;
+        return 1;
+    }
 
+
+    static handleEvaluationResult(score) {
         // Actualizar progreso solo si el usuario está logueado
         if (window.app && window.app.currentUser && score >= 70 && typeof Storage !== 'undefined') {
             this.updateUserProgress(score);
@@ -803,7 +1004,6 @@ class HandwritingModule {
         try {
             const progress = Storage.getUserProgress(window.app.currentUser.id);
             
-            // Verificar que progress y handwriting existan
             if (progress && progress.handwriting) {
                 const handwritingProgress = progress.handwriting;
                 const practiceCount = handwritingProgress.practiceCount || 0;
@@ -812,7 +1012,6 @@ class HandwritingModule {
                 lettersPracticed.textContent = practiceCount;
                 bestScore.textContent = bestScoreValue + '%';
             } else {
-                // Si no existe, mostrar valores por defecto
                 lettersPracticed.textContent = '0';
                 bestScore.textContent = '0%';
             }
@@ -826,5 +1025,18 @@ class HandwritingModule {
 
     static loadUserProgress() {
         this.updateProgressDisplay();
+    }
+
+    static startPracticeTimer() {
+        this.practiceStartTime = Date.now();
+    }
+
+    static showContentWarning() {
+        if (typeof UI !== 'undefined' && UI.showNotification) {
+            UI.showNotification(
+                'Contenido inapropiado detectado. Por favor, practica solo letras y formas.', 
+                'error'
+            );
+        }
     }
 }
